@@ -1,0 +1,80 @@
+package com.example.klyuchnik;
+
+import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class UpdatePersonActivity extends AppCompatActivity {
+
+    // переменные для edit text, кнопки, строк и класса dbhandler.
+    private EditText FullNameEdt, CardNumberEdt, TimeEdt, AudienceNumberEdt;
+    private Button updatePersonBtn, deletePersonBtn;
+    private com.example.klyuchnik.DBHandler dbHandler;
+    String FullName, CardNumber, Time, AudienceNumber;
+
+    @SuppressLint("MissingInflatedId")
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_update_person);
+
+        // инициализируем все переменные.
+        FullNameEdt = findViewById(R.id.idEdtFullName);
+        CardNumberEdt = findViewById(R.id.idEdtCardNumber);
+        TimeEdt = findViewById(R.id.idEdtTime);
+        AudienceNumberEdt = findViewById(R.id.idEdtAudienceNumber);
+        updatePersonBtn = findViewById(R.id.idBtnUpdate);
+        deletePersonBtn = findViewById(R.id.idBtnDelete);
+
+        // в строке ниже инициализируем класс dbhandler.
+        dbHandler = new DBHandler(UpdatePersonActivity.this);
+
+        // в строках ниже получаем данные, которые передали в классе adapter.
+        FullName = getIntent().getStringExtra("name");
+        CardNumber = getIntent().getStringExtra("card");
+        Time = getIntent().getStringExtra("time");
+        AudienceNumber = getIntent().getStringExtra("audience");
+
+        // настройка данных для редактирования текста активности обновления.
+        FullNameEdt.setText(FullName);
+        CardNumberEdt.setText(CardNumber);
+        TimeEdt.setText(Time);
+        AudienceNumberEdt.setText(AudienceNumber);
+
+        // добавление Click Listener к кнопке обновления данных.
+        updatePersonBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // внутри этого метода вызывается метод updateCourse
+                // и передаем все текстовые значения редактирования.
+                dbHandler.updatePerson(FullName, FullNameEdt.getText().toString(), CardNumberEdt.getText().toString(), TimeEdt.getText().toString(), AudienceNumberEdt.getText().toString());
+
+                // отображение всплывающего сообщения о том, что данные были обновлены.
+                Toast.makeText(UpdatePersonActivity.this, "Данные обновлены", Toast.LENGTH_SHORT).show();
+
+                // запуск main activity.
+                Intent i = new Intent(UpdatePersonActivity.this, com.example.klyuchnik.DataView.class);
+                startActivity(i);
+            }
+        });
+
+        // добавление click listener для кнопки удаления.
+        deletePersonBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // вызов метода для удаления.
+                dbHandler.deletePerson(FullName);
+                Toast.makeText(UpdatePersonActivity.this, "Данные удалены", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(UpdatePersonActivity.this, DataView.class);
+                startActivity(i);
+            }
+        });
+    }
+}
