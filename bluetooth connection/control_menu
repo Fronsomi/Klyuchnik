@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/id_connect"
+        android:title="Подключиться"
+        android:orderInCategory="100"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_connect"
+        />
+    <item
+        android:id="@+id/id_bluetooth"
+        android:title="Bluetooth устройства"
+        android:orderInCategory="200"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_bluetooth"
+        />
+    <item
+        android:id="@+id/id_list"
+        android:title="База данных"
+        android:orderInCategory="300"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_list"
+        />
+</menu>
