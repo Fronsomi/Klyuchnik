@@ -1,0 +1,88 @@
+package com.example.klyuchnik;
+
+import android.content.Context;
+import android.content.Intent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+
+public class PersonRVAdapter extends RecyclerView.Adapter<PersonRVAdapter.ViewHolder> {
+
+    // переменная для ArrayList и Context
+    private ArrayList<com.example.klyuchnik.PersonModal> personModalArrayList;
+    private Context context;
+
+    // конструктор
+    public PersonRVAdapter(ArrayList<com.example.klyuchnik.PersonModal> personModalArrayList, Context context) {
+        this.personModalArrayList = personModalArrayList;
+        this.context = context;
+    }
+
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // в строке ниже мы расширяем файл макета
+        // для элементов представления recycler view.
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.person_rv_item, parent, false);
+        return new ViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        // в строке ниже мы устанавливаем данные для
+        // представлений элемента просмотра recycler view.
+        PersonModal modal = personModalArrayList.get(position);
+        holder.FullNameTV.setText(modal.getFullName());
+        holder.CardNumberTV.setText(modal.getCardNumber());
+        holder.TimeTV.setText(modal.getTime());
+        holder.AudienceNumberTV.setText(modal.getAudienceNumber());
+
+
+        // нижняя строка предназначена для добавления прослушивателя кликов для элемента просмотра recycler.
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //в строке ниже мы вызываем намерение.
+                Intent i = new Intent(context, UpdatePersonActivity.class);
+
+                // ниже мы передаем все значения.
+                i.putExtra("name", modal.getFullName());
+                i.putExtra("card", modal.getCardNumber());
+                i.putExtra("time", modal.getTime());
+                i.putExtra("audience", modal.getAudienceNumber());
+
+                // начинаем activity.
+                context.startActivity(i);
+            }
+        });
+    }
+
+    @Override
+    public int getItemCount() {
+        // возвращая размер списка массивов
+        return personModalArrayList.size();
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+
+        // создание переменных для текстовых представлений.
+        private TextView FullNameTV, CardNumberTV, TimeTV, AudienceNumberTV;
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            // инициализация текстовых представлений
+            FullNameTV = itemView.findViewById(R.id.idTVFullName);
+            CardNumberTV = itemView.findViewById(R.id.idTVCardNumber);
+            TimeTV = itemView.findViewById(R.id.idTVTime);
+            AudienceNumberTV = itemView.findViewById(R.id.idTVAudienceNumber);
+        }
+    }
+}
+
