@@ -1,0 +1,161 @@
+package com.example.klyuchnik;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+import java.util.ArrayList;
+
+public class DBHandler extends SQLiteOpenHelper {
+
+    // создание постоянных переменных для базы данных.
+    // переменная ниже для имени базы данных.
+    private static final String DB_NAME = "persondb";
+
+    // ниже int — версия базы данных
+    private static final int DB_VERSION = 1;
+
+    // ниже переменная для имени таблицы.
+    private static final String TABLE_NAME = "person";
+
+    // ниже переменная для столбца id.
+    private static final String ID_COL = "id";
+
+    // ниже переменная для столбца ФИО
+    private static final String NAME_COL = "name";
+
+    // ниже идентификатор переменной для столбца номера карты.
+    private static final String CARD_COL = "card";
+
+    // ниже переменная для столбца времени.
+    private static final String TIME_COL = "time";
+
+    // ниже переменной для столбца номера аудитории.
+    private static final String AUDIENCE_COL = "audience";
+
+    // создание конструктора для обработчика базы данных.
+    public DBHandler(Context context) {
+        super(context, DB_NAME, null, DB_VERSION);
+    }
+
+    // ниже метод предназначен для создания базы данных путем запуска запроса sqlite
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        // в нижней строке создаем
+        // запрос sqlite и
+        // устанавливаем имена столбцов
+        // вместе с их типами данных.
+        String query = "CREATE TABLE " + TABLE_NAME + " ("
+                + ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + NAME_COL + " TEXT,"
+                + CARD_COL + " TEXT,"
+                + TIME_COL + " TEXT,"
+                + AUDIENCE_COL + " TEXT)";
+
+
+        // наконец мы вызываем exec sql
+        // метод для выполнения вышеуказанного sql-запроса
+        db.execSQL(query);
+    }
+
+    // этот метод используется для добавления нового человека в базу данных sqlite.
+    public void addNewCourse(String personFullName, String personCardNumber, String personTime, String personAudienceNumber) {
+
+        // в строке ниже создаем переменную для
+        // базы данных sqlite и вызываем доступный для записи метод,
+        // поскольку записываем данные в базу данных.
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // в строке ниже создаем переменную
+        // для значений содержимого.
+        ContentValues values = new ContentValues();
+
+        // в нижней строке передаем все значения
+        // вместе с парой ключа и значения.
+        values.put(NAME_COL, personFullName);
+        values.put(CARD_COL, personCardNumber);
+        values.put(TIME_COL, personTime);
+        values.put(AUDIENCE_COL, personAudienceNumber);
+
+        // после добавления всех значений мы передаем
+        // значения содержимого в таблицу.
+        db.insert(TABLE_NAME, null, values);
+
+        // наконец мы закрываем
+        // базу данных после добавления базы данных.
+        db.close();
+    }
+
+
+    // мы создали новый метод для чтения всех записей.
+    public ArrayList<PersonModal> readPerson() {
+        // в строке ниже мы создаем базу данных
+        // для чтения базы данных.
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // в строке ниже мы создаем cursor с запросом на чтение данных из базы данных.
+        Cursor cursorPerson = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+
+        // в строке ниже мы создаем новый список массивов.
+        ArrayList<PersonModal> personModalArrayList = new ArrayList<>();
+
+        // перемещая cursor в первую позицию.
+        if (cursorPerson.moveToFirst()) {
+            do {
+                // в строке ниже добавляем данные из cursor в список массивов.
+                personModalArrayList.add(new PersonModal(cursorPerson.getString(1),
+                        cursorPerson.getString(2),
+                        cursorPerson.getString(3),
+                        cursorPerson.getString(4)));
+            } while (cursorPerson.moveToNext());
+            // перемещая cursor к следующему.
+        }
+        // наконец, закрытие cursor
+        // и возврат списка массивов.
+        cursorPerson.close();
+        return personModalArrayList;
+    }
+
+    // ниже приведен способ обновления данных
+    public void updatePerson(String originalPersonName, String personFullName, String personCardNumber,
+                             String personTime, String personAudienceNumber) {
+
+        // вызов метода для получения доступной для записи базы данных.
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        // передаем все значения
+        // вместе с парой ключа и значения.
+        values.put(NAME_COL, personFullName);
+        values.put(CARD_COL, personCardNumber);
+        values.put(TIME_COL, personTime);
+        values.put(AUDIENCE_COL, personAudienceNumber);
+
+        // вызываем метод обновления для обновления базы данных и передачи значений.
+        // и сравниваем его с названием, которое хранится в исходной переменной name.
+        db.update(TABLE_NAME, values, "name=?", new String[]{originalPersonName});
+        db.close();
+    }
+
+    // Ниже приведен метод удаления данных.
+    public void deletePerson(String personName) {
+
+        // в строке ниже мы создаем переменную
+        // для записи базы данных.
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // вызываем метод для удаления
+        // данных и сравниваем его с именем.
+        db.delete(TABLE_NAME, "name=?", new String[]{personName});
+        db.close();
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // этот метод вызывается, чтобы проверить, существует ли уже таблица.
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        onCreate(db);
+    }
+}
