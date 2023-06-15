@@ -1,0 +1,45 @@
+package com.example.klyuchnik;
+
+import android.annotation.SuppressLint;
+import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import java.util.ArrayList;
+
+public class ViewPerson extends AppCompatActivity {
+
+    // создание переменных для списка массивов,
+    // представление dbhandler, адаптера и recycler.
+    private ArrayList<PersonModal> personModalArrayList;
+    private com.example.klyuchnik.DBHandler dbHandler;
+    private com.example.klyuchnik.PersonRVAdapter personRVAdapter;
+    private RecyclerView personRV;
+
+    @SuppressLint("MissingInflatedId")
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_view_person);
+
+        // инициализируя все переменные.
+        personModalArrayList = new ArrayList<>();
+        dbHandler = new DBHandler(ViewPerson.this);
+
+        // получение списка массивов
+        // курсов из класса обработчика базы данных.
+        personModalArrayList = dbHandler.readPerson();
+
+        // передача списка массивов классу адаптера.
+        personRVAdapter = new PersonRVAdapter(personModalArrayList, ViewPerson.this);
+        personRV = findViewById(R.id.idRVPerson);
+
+        // установка менеджера компоновки для представления recycler view.
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ViewPerson.this, RecyclerView.VERTICAL, false);
+        personRV.setLayoutManager(linearLayoutManager);
+
+        // настройка адаптера на просмотр recycler view.
+        personRV.setAdapter(personRVAdapter);
+    }
+}
