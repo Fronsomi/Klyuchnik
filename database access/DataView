@@ -1,0 +1,73 @@
+package com.example.klyuchnik;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class DataView extends AppCompatActivity {
+
+    // создание переменных для edittext, кнопки и dbhandler
+    private EditText FullNameEdt, CardNumberEdt, TimeEdt, AudienceNumberEdt;
+    private Button addPersonBtn, readPersonBtn;
+    private DBHandler dbHandler;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_data_view);
+
+        // инициализация всех переменных.
+        FullNameEdt = findViewById(R.id.idEdtFullName);
+        CardNumberEdt = findViewById(R.id.idEdtCardNumber);
+        TimeEdt = findViewById(R.id.idEdtTime);
+        AudienceNumberEdt = findViewById(R.id.idEdtAudienceNumber);
+        addPersonBtn = findViewById(R.id.idBtnAddPerson);
+        readPersonBtn = findViewById(R.id.idBtnReadPerson);
+
+        // создание нового класса dbhandler и передача ему context.
+        dbHandler = new DBHandler(DataView.this);
+
+        // добавления ClickListener для кнопки добавления данных.
+        addPersonBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // получение данных из всех текстовых полей редактирования.
+                String FullName = FullNameEdt.getText().toString();
+                String CardNumber = CardNumberEdt.getText().toString();
+                String Time = TimeEdt.getText().toString();
+                String AudienceNumber = AudienceNumberEdt.getText().toString();
+
+                // проверка, являются ли текстовые поля пустыми или нет.
+                if (FullName.isEmpty() || Time.isEmpty() || CardNumber.isEmpty() || AudienceNumber.isEmpty()) {
+                    Toast.makeText(DataView.this, "Пожалуйста, введите данные во все поля", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // метод для добавления нового курса
+                dbHandler.addNewCourse(FullName, CardNumber, AudienceNumber, Time);
+
+                // всплывающее сообщение после добавления данных.
+                Toast.makeText(DataView.this, "Данные добавлены", Toast.LENGTH_SHORT).show();
+                FullNameEdt.setText("");
+                CardNumberEdt.setText("");
+                TimeEdt.setText("");
+                AudienceNumberEdt.setText("");
+            }
+        });
+
+        readPersonBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // открытие новой активности через намерение.
+                Intent i = new Intent(DataView.this, ViewPerson.class);
+                startActivity(i);
+            }
+        });
+    }
+}
