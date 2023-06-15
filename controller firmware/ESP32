@@ -1,0 +1,18 @@
+void setup() {
+ Serial.begin(115200);
+ Serial.println("Waiting a client connection to notify...");
+}
+
+void loop() {
+
+  //const char *txString;
+  String strFromMega;
+  strFromMega = Serial.readString();
+  delay(20);
+  char txString[strFromMega.length()+1];
+  int strSize = strFromMega.length();
+  strncpy(txString, strFromMega.c_str(), strSize);
+  txString[strFromMega.length()]='\0';
+  Serial.println(String("!!!ESP32!!!: ") + txString);
+  Serial.println(String("strFromMega: ") + strFromMega);
+}
